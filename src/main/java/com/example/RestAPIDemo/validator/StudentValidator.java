@@ -16,15 +16,14 @@ public class StudentValidator {
         this.validator = validator;
     }
 
-    public void validateStudentId(String id) {
+    public void validateStudentId(int id) throws ConstraintViolationException{
 
         try {
-            int idNumber = Integer.parseInt(id);
-            if (idNumber < 0) {
-                throw new Exception("Invalid input: ID cannot be negative", null);
+            if (id < 0) {
+                throw new ConstraintViolationException("Invalid input: ID cannot be negative", null);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } finally {
+            System.out.println("Validation success");
         }
     }
 

@@ -21,6 +21,9 @@ public class Student {
         this.course = course;
     }
 
+    public Student(Integer id, String name, String course) {
+    }
+
     // Getter and setter methods
 
     public int getId() {

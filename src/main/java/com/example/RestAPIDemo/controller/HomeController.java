@@ -1,5 +1,6 @@
 package com.example.RestAPIDemo.controller;
 
+import com.example.RestAPIDemo.DTO.StudentDTO;
 import com.example.RestAPIDemo.model.Student;
 import com.example.RestAPIDemo.service.StudentService;
 import jakarta.validation.ConstraintViolationException;
@@ -13,6 +14,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.io.InvalidObjectException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("students")
@@ -21,9 +23,9 @@ public class HomeController {
     @Autowired
     private StudentService studentService;
     @GetMapping
-    public ResponseEntity<List<Student>> getStudentList() {
+    public ResponseEntity<List<StudentDTO>> getStudentList() {
         try {
-            List<Student> studentList = studentService.getStudents();
+            List<StudentDTO> studentList = studentService.getStudents();
             return new ResponseEntity<>(studentList, HttpStatus.OK);
         }
         catch (Exception e) {
@@ -33,7 +35,7 @@ public class HomeController {
 
 
     @PostMapping
-    public ResponseEntity<Student> createStudent(@RequestBody Student student) {
+    public ResponseEntity<Student> createStudent(@RequestBody(required = true) Student student) {
         try {
             Student createdStudent = studentService.createStudent(student);
             return new ResponseEntity<>(createdStudent, HttpStatus.CREATED);
@@ -54,11 +56,11 @@ public class HomeController {
 
     // PUT: Update an existing student
     @PutMapping("/{id}")
-    public ResponseEntity<Student> updateStudent(@PathVariable String id, @RequestBody Student student) {
+    public ResponseEntity<StudentDTO> updateStudent(@PathVariable(name = "id", required = true) int id, @RequestBody Student student) {
         try {
-            Student updatedStudent = studentService.updateStudent(id, student);
+            StudentDTO updatedStudent = studentService.updateStudent(id, student);
             return new ResponseEntity<>(updatedStudent, HttpStatus.OK);
-        } catch (NullPointerException e) {
+        } catch (NoSuchElementException e) {
             System.out.println(e+" No Student objects found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (ConstraintViolationException e) {
@@ -75,14 +77,14 @@ public class HomeController {
 
     // DELETE: Delete a student by ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable String id) {
+    public ResponseEntity<Void> deleteStudent(@PathVariable(name = "id", required = true) int id) {
         try {
             studentService.deleteStudent(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (MethodArgumentTypeMismatchException e) {
             System.err.println("Invalid type for ID parameter: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }  catch (NullPointerException e) {
+        }  catch (NoSuchElementException e) {
             System.out.println(e+" No Student objects found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (ConstraintViolationException e) {
